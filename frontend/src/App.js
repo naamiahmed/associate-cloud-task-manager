@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import TaskForm from './components/TaskForm';
 import TaskList from './components/TaskList';
+import FileSection from './components/FileSection';
 import './App.css';
 
 const API_URL = 'http://localhost:8000/api/tasks/';
@@ -92,6 +93,7 @@ function App() {
             onDelete={deleteTask}
           />
         )}
+        <FileSection />
       </main>
       <style>{`
         .app-container {
