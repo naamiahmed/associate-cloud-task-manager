@@ -11,7 +11,7 @@ const FileSection = () => {
 
   const fetchFiles = async () => {
     try {
-      const response = await fetch('http://13.235.244.234:8000/api/files/');
+      const response = await fetch('/api/files/');
       if (!response.ok) throw new Error('Failed to fetch files');
       const data = await response.json();
       setFiles(data);
