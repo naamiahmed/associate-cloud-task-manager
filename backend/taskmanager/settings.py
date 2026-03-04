@@ -85,7 +85,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
-    "http://13.235.244.234",  # your EC2 public IP
+    "http://13.235.244.234",
+    "http://13.235.244.234:3000",
 ]
 
 # AWS S3 Settings
