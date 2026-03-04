@@ -4,35 +4,74 @@ import TaskForm from './components/TaskForm';
 import TaskList from './components/TaskList';
 import './App.css';
 
+const API_URL = 'http://localhost:8000/api/tasks/';
+
 function App() {
-  const [tasks, setTasks] = useState(() => {
-    const savedTasks = localStorage.getItem('tasks');
-    return savedTasks ? JSON.parse(savedTasks) : [];
-  });
+  const [tasks, setTasks] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    localStorage.setItem('tasks', JSON.stringify(tasks));
-  }, [tasks]);
+    fetchTasks();
+  }, []);
 
-  const addTask = (text) => {
-    const newTask = {
-      id: Date.now(),
-      text,
-      completed: false,
-    };
-    setTasks([newTask, ...tasks]);
+  const fetchTasks = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch(API_URL);
+      if (!response.ok) throw new Error('Failed to fetch tasks');
+      const data = await response.json();
+      setTasks(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const toggleTask = (id) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
-    );
+  const addTask = async (text) => {
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: text, description: '' }),
+      });
+      if (!response.ok) throw new Error('Failed to add task');
+      const newTask = await response.json();
+      setTasks([newTask, ...tasks]);
+    } catch (err) {
+      alert(err.message);
+    }
   };
 
-  const deleteTask = (id) => {
-    setTasks(tasks.filter((task) => task.id !== id));
+  const toggleTask = async (id) => {
+    const task = tasks.find((t) => t.id === id);
+    if (!task) return;
+
+    try {
+      const response = await fetch(`${API_URL}${id}/`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ completed: !task.completed }),
+      });
+      if (!response.ok) throw new Error('Failed to update task');
+      const updatedTask = await response.json();
+      setTasks(tasks.map((t) => (t.id === id ? updatedTask : t)));
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  const deleteTask = async (id) => {
+    try {
+      const response = await fetch(`${API_URL}${id}/`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Failed to delete task');
+      setTasks(tasks.filter((task) => task.id !== id));
+    } catch (err) {
+      alert(err.message);
+    }
   };
 
   const completedTasks = tasks.filter((task) => task.completed).length;
@@ -42,11 +81,17 @@ function App() {
       <Header totalTasks={tasks.length} completedTasks={completedTasks} />
       <main className="main-content">
         <TaskForm onAddTask={addTask} />
-        <TaskList
-          tasks={tasks}
-          onToggle={toggleTask}
-          onDelete={deleteTask}
-        />
+        {isLoading ? (
+          <div className="loading">Loading tasks...</div>
+        ) : error ? (
+          <div className="error">{error}</div>
+        ) : (
+          <TaskList
+            tasks={tasks}
+            onToggle={toggleTask}
+            onDelete={deleteTask}
+          />
+        )}
       </main>
       <style>{`
         .app-container {
@@ -55,6 +100,14 @@ function App() {
         }
         .main-content {
           padding: 0 1rem;
+        }
+        .loading, .error {
+          text-align: center;
+          padding: 2rem;
+          color: var(--text-muted);
+        }
+        .error {
+          color: var(--danger);
         }
       `}</style>
     </div>
