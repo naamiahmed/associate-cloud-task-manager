@@ -5,7 +5,7 @@ import TaskList from './components/TaskList';
 import FileSection from './components/FileSection';
 import './App.css';
 
-const API_URL = '/api/tasks/';
+const API_URL = process.env.REACT_APP_API_URL ? `${process.env.REACT_APP_API_URL}/tasks/` : 'http://localhost:8000/api/tasks/';
 
 function App() {
   const [tasks, setTasks] = useState([]);

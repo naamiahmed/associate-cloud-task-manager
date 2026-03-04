@@ -10,8 +10,9 @@ const FileSection = () => {
   }, []);
 
   const fetchFiles = async () => {
+    const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
     try {
-      const response = await fetch('/api/files/');
+      const response = await fetch(`${baseUrl}/files/`);
       if (!response.ok) throw new Error('Failed to fetch files');
       const data = await response.json();
       setFiles(data);
@@ -32,7 +33,8 @@ const FileSection = () => {
     setError(null);
 
     try {
-      const response = await fetch('http://13.235.244.234:8000/api/files/', {
+      const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
+      const response = await fetch(`${baseUrl}/files//`, {
         method: 'POST',
         body: formData,
       });
@@ -49,8 +51,9 @@ const FileSection = () => {
   };
 
   const handleDelete = async (id) => {
+    const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
     try {
-      const response = await fetch(`http://13.235.244.234:8000/api/files/${id}/`, {
+      const response = await fetch(`${baseUrl}/files/${id}/`, {
         method: 'DELETE',
       });
       if (!response.ok) throw new Error('Delete failed');
