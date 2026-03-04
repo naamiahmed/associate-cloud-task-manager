@@ -5,7 +5,7 @@ import TaskList from './components/TaskList';
 import FileSection from './components/FileSection';
 import './App.css';
 
-const API_URL = 'http://localhost:8000/api/tasks/';
+const API_URL = 'http://13.235.244.234:8000/api/tasks/';
 
 function App() {
   const [tasks, setTasks] = useState([]);
