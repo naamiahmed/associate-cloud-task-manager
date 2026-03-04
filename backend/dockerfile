@@ -8,4 +8,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 ENV DJANGO_SETTINGS_MODULE=taskmanager.settings
+
+RUN chmod +x docker-entrypoint.sh
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
 CMD ["gunicorn", "taskmanager.wsgi:application", "--bind", "0.0.0.0:8000"]
